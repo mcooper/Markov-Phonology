@@ -1,49 +1,49 @@
-library(markovchain)
+words3 <- as.list(freqChain[freqChain!=0])
+names(words3) <- chain[freqChain!=0]
 
-setwd('D:/Documents and Settings/mcooper/Google Drive/Markov Phonology')
-
-load('markovchain.Rdata')
-
-step <- function(state, bawal){
-  p <- firstPassage(mc, state=state, n=1)
-  mx <- max(p[!p %in% bawal])
-  val <- colnames(p)[p==mx]
-  return(list(mx, val))
+getNext <- function(x, n){
+  #Takes a sequence of phones as "X.X.X.X..."
+  #returns the possibility of that word with a new letter
+  phones <- strsplit(n, '.', fixed=T)[[1]]
+  last <- length(phones)
+  nextPhones <- freqChain[phones[last-1], phones[last], ]
+  nextPhones <- nextPhones[nextPhones > 0]
+  if(sum(nextPhones) > 0 ){
+    freqNames <- paste(n, names(nextPhones), sep='.')
+    freqs <- x[[1]]*nextPhones
+    names(freqs) <- freqNames
+    return(freqs)
+  }else{
+    return(NULL)
+  }
 }
 
-simlatelength(2)
-  bawal1<-NULL
-  phn1 <- NULL
-  for (z in seq(1,10)){
-    out <- step('0', bawal1)
-    bawal1 <- c(out[[1]], bawal1)
-    phn1 <- c(phn1, out[[2]])
-  }
-  bawal2 <- NULL
-  phn2 <- NULL
-  for (i in phn1){
-    for (z in seq(1,10)){
-      out <- step(i, bawal2)
-      bawal2 <- c(out[[1]], bawal2)
-      phn2 <- list(phn2, list(i, out[[2]]))
-    }
-  }
+words4 <- NULL
+for(w in 1:length(words3)){
+  words4 <- c(words4, getNext(words3[w], names(words3[w])))
+}
 
-  
-### So its looking like we will need a higher order markov chain, as well as better methods for exploring possibility space
+words5 <- NULL
+for(w in 1:length(words4)){
+  words5 <- c(words5, getNext(words4[w], names(words4[w])))
+}
+
+words6 <- NULL
+for(w in 1:length(words5)){
+  words6 <- c(words6, getNext(words5[w], names(words5[w])))
+}
+
+words7 <- NULL
+for(w in 1:length(words6)){
+  words7 <- c(words7, getNext(words6[w], names(words6[w])))
+}
+
+words8 <- NULL
+for(w in 1:length(words7)){
+  words8 <- c(words8, getNext(words7[w], names(words7[w])))
+}
 
 
 
 
-##AH is
-mc['0','AH']*mc['AH','0']
 
-##AH N
-
-mc['0','AH']*mc['AH', 'N']*mc['N','0']
-
-##AH N D
-
-mc['0','AH']*mc[
-
-##AH N T

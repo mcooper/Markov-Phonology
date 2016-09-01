@@ -1,9 +1,8 @@
-library(plyr)
+library(dplyr)
 library(stringr)
 
-setwd('D:/Documents and Settings/mcooper/Google Drive/Markov Phonology')
-
-text <- readLines('D:/Documents and Settings/mcooper/Google Drive/Markov Phonology/CMUDICT.txt')
+#Read in English phonolical dictionary from Carnegie Mellon University
+text <- readLines('CMUDICT.txt')
 
 parselines <- function(line){
   #Function to parse each line of the text file
@@ -13,15 +12,16 @@ parselines <- function(line){
     for (i in 2:(nrow(loc)-1)){
       newword <- str_sub(line, loc[i,1], loc[i+1,1])
       newword <- str_replace_all(newword, '[ 0123456789]', '')
-      word <- append(word, newword)
+      word <- c(word, newword)
     }
   }
   lastword <- str_sub(line, loc[nrow(loc),1], nchar(line))
   lastword <- str_replace_all(lastword, '[ 0123456789]', '')
-  word <- append(word, lastword)
-  word <- append(word, nrow(loc)-1)
+  word <- c(word, lastword)
+  word <- c(word, nrow(loc)-1)
+  word <- c(word, paste(word[2:(length(word)-1)], collapse='.'))
   word <- as.list(word)
-  names(word) <- c('name', paste0('p', seq(1, nrow(loc)-1)), 'count')
+  names(word) <- c('name', paste0('p', seq(1, nrow(loc)-1)), 'count', 'W.ER.D')
   return(word)
 }
 
@@ -29,7 +29,7 @@ parselines <- function(line){
 parsed <- lapply(text, parselines)  
 
 #Combine all parsed lines into data frame form list.
-allparsed <- rbind.fill(lapply(parsed, as.data.frame))
+allparsed <- bind_rows(lapply(parsed, as.data.frame))
 
 #remove duplicate names
 allparsed <- allparsed[!grepl('(1)', allparsed$name),]
@@ -38,9 +38,6 @@ allparsed <- allparsed[!grepl('(1)', allparsed$name),]
 allparsed$name <- str_replace_all(allparsed$name, '[ 0123456789]', '')
 
 write.csv(allparsed, 'AllParsed.csv', row.names=F)
-
-
-
 
 
 
