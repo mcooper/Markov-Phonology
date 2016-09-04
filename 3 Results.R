@@ -18,32 +18,14 @@ getNext <- function(x, n){
   }
 }
 
-words4 <- NULL
-for(w in 1:length(words3)){
-  words4 <- c(words4, getNext(words3[w], names(words3[w])))
-}
+words4 <- mapply(getNext, words3, names(words3))
 
-words5 <- NULL
-for(w in 1:length(words4)){
-  words5 <- c(words5, getNext(words4[w], names(words4[w])))
-}
+words5 <- mapply(getNext, words4, names(words4))
 
-words6 <- NULL
-for(w in 1:length(words5)){
-  words6 <- c(words6, getNext(words5[w], names(words5[w])))
-}
+words6 <- mapply(getNext, words5, names(words5))
 
-words7 <- NULL
-for(w in 1:length(words6)){
-  words7 <- c(words7, getNext(words6[w], names(words6[w])))
-}
+words7 <- mapply(getNext, words6, names(words6))
 
-words8 <- NULL
-for(w in 1:length(words7)){
-  words8 <- c(words8, getNext(words7[w], names(words7[w])))
-}
-
-
-
+words8 <- mapply(getNext, words7, names(words7))
 
 
