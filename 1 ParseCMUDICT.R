@@ -19,7 +19,7 @@ parselines <- function(line){
   lastword <- str_replace_all(lastword, '[ 0123456789]', '')
   word <- c(word, lastword)
   word <- c(word, nrow(loc)-1)
-  word <- c(word, paste(word[2:(length(word)-1)], collapse='.'))
+  word <- c(word, paste0('0.', paste(word[2:(length(word)-1)], collapse='.'), '.0'))
   word <- as.list(word)
   names(word) <- c('name', paste0('p', seq(1, nrow(loc)-1)), 'count', 'W.ER.D')
   return(word)

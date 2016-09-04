@@ -1,5 +1,6 @@
-words3 <- as.list(freqChain[freqChain!=0])
-names(words3) <- chain[freqChain!=0]
+#Get all of the possible word-inital phones, as well as all of the probability of each phone following
+words2 <- as.list(freqChain[1, , ][freqChain[1, , ]!=0])
+names(words2) <- chain[1, , ][freqChain[1, , ]!=0]
 
 getNext <- function(x, n){
   #Takes a sequence of phones as "X.X.X.X..."
@@ -18,14 +19,47 @@ getNext <- function(x, n){
   }
 }
 
-words4 <- mapply(getNext, words3, names(words3))
+countPhones <- function(word) {
+  word2 <- gsub('.',"",word, fixed=T)
+  return (nchar(word) - nchar(word2)-1)
+}
 
-words5 <- mapply(getNext, words4, names(words4))
+words3 <- mapply(getNext, words2, names(words2))
+names(words3) <- NULL
+words3 <- unlist(words3)
+words2stop <- words3[grepl('.0', names(words3))]
 
-words6 <- mapply(getNext, words5, names(words5))
+words3sel <- words3[!grepl('.0', names(words3))]
+words4 <- mapply(getNext, words3sel, names(words3sel))
+names(words4) <- NULL
+words4 <- unlist(words4)
+words3stop <- words4[grepl('.0', names(words4))]
 
-words7 <- mapply(getNext, words6, names(words6))
+words4sel <- words4[!grepl('.0', names(words4))]
+words5 <- mapply(getNext, words4sel, names(words4sel))
+names(words5) <- NULL
+words5 <- unlist(words5)
+words4stop <- words5[grepl('.0', names(words5))]
 
-words8 <- mapply(getNext, words7, names(words7))
+words5sel <- words5[!grepl('.0', names(words5))]
+words6 <- mapply(getNext, words5sel, names(words5sel))
+names(words6) <- NULL
+words6 <- unlist(words6)
+words5stop <- words6[grepl('.0', names(words6))]
 
+words6sel <- words6[!grepl('.0', names(words6))]
+words7 <- mapply(getNext, words6sel, names(words6sel))
+names(words7) <- NULL
+words7 <- unlist(words7)
+words6stop <- words6[grepl('.0', names(words6))]
+words7stop <- words7[grepl('.0', names(words7))]
 
+words <- data.frame(combo_probability=c(words2stop, words3stop, words4stop, words5stop, words6stop, words7stop),
+                    W.ER.D=c(names(words2stop), names(words3stop), names(words4stop), names(words5stop), names(words6stop), names(words7stop)),
+                    stringsAsFactors = FALSE)
+
+words$phonecount <- sapply(words$W.ER.D, countPhones)
+words <- merge(words, freq_sum, by.x='phonecount', by.y='count')
+words$probability <- words$combo_probability*words$Freq
+
+words <- words[order(words$probability, decreasing=T), ]
