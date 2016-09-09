@@ -59,7 +59,26 @@ words <- data.frame(combo_probability=c(words2stop, words3stop, words4stop, word
                     stringsAsFactors = FALSE)
 
 words$phonecount <- sapply(words$W.ER.D, countPhones)
-words <- merge(words, freq_sum, by.x='phonecount', by.y='count')
-words$probability <- words$combo_probability*words$Freq
 
-words <- words[order(words$probability, decreasing=T), ]
+words <- words[order(words$combo_probability, decreasing=T), ]
+
+getGibberish <- function(x){
+  c2probs <- rowSums(freqChain['0',,])
+  c1 <- '0'
+  c2 <- sample(names(c2probs), 1, prob=c2probs)
+  word <- c(c1, c2)
+  while(length(word) < x){
+    c1 <- word[length(word) - 1]
+    c2 <- word[length(word)]
+    if(c2 == '0'){
+      c3 <- sample(names(c2probs), 1, prob=c2probs)
+    } else{
+      c3 <- sample(names(freqChain[c1, c2, ]), 1, prob=freqChain[c1, c2, ])
+    }
+    word <- c(word, c3)
+  }
+  paste(word, collapse='.')
+}
+
+getGibberish(50)
+

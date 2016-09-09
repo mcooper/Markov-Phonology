@@ -4,7 +4,7 @@ freq$Word <- toupper(freq$Word)
 
 dict <- merge(allparsed, freq, by.x='name', by.y='Word')
 
-total <- sum(freq_sum$Freq)
+total <- sum(freq$Frequency)
 
 uniquePhones <- c('0', dict$p1, dict$p2, dict$p3, dict$p4, dict$p5, dict$p7, dict$p8, dict$p9, dict$p10) %>% 
   unique %>% na.omit
