@@ -67,7 +67,7 @@ getGibberish <- function(x){
   c1 <- '0'
   c2 <- sample(names(c2probs), 1, prob=c2probs)
   word <- c(c1, c2)
-  while(length(word) < x){
+  while(sum(word=='0') < x+1){
     c1 <- word[length(word) - 1]
     c2 <- word[length(word)]
     if(c2 == '0'){
@@ -80,5 +80,26 @@ getGibberish <- function(x){
   paste(word, collapse='.')
 }
 
-getGibberish(50)
+
+eSpeakPhonemes <- function(x){
+  df <- data.frame(CMU=c(".AA.", ".AE.", ".AH.", ".AO.", ".AW.", ".AY.", ".B.", ".CH.", ".D.", ".DH.", ".EH.", 
+                         ".ER.", ".EY.", ".F.", ".G.", ".HH.", ".IH.", ".IY.", ".JH.", ".K.", ".L.", ".M.", 
+                         ".N.", ".NG.", ".OW.", ".OY.", ".P.", ".R.", ".S.", ".SH.", ".T.", ".TH.", ".UH.", 
+                         ".UW.", ".V.", ".W.", ".Y.", ".Z.", ".ZH.", ".", "0"),
+                   eSpeak=c(".A:.", ".a.", ".@.", ".A@.", ".au@.", ".aI.", ".b.", ".tS.", ".d.", ".D.", ".E.", 
+                            ".e@.", ".eI.", ".f.", ".g.", ".h.", ".I.", ".i.", ".dZ.", ".k.", ".l.", ".m.", ".n.", 
+                            ".N.", ".oU.", ".OI.", ".i:.", ".r.", ".s.", ".S.", ".t.", ".T.", ".U.", ".u:.", ".v.", 
+                            ".w.", ".j.", ".z.", ".Z.", "", " "),
+                   stringsAsFactors = F)
+  result <- x
+  for (i in 1:nrow(df)){
+    result <- gsub(df$CMU[i], df$eSpeak[i], result, fixed = T)
+  }
+  result
+}
+
+
+out <- getGibberish(10) %>% eSpeakPhonemes
+  
+system(paste0('"C:/Program Files (x86)/eSpeak/command_line/espeak" "[[', out, ']]"'))
 
