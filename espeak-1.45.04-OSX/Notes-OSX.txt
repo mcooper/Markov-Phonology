@@ -1,0 +1,58 @@
+From: Silas S. Brown <ssb22@cam.ac.uk>
+Date: 28 Jul 2011
+
+Hi Jonathan,
+
+As you may know, Macs are available in 2 architectures, PowerPC
+and Intel, and up until recently Apple shipped a dynamic
+translator called Rosetta with their Intel Macs, so PowerPC
+programs will still run (albeit a bit slower) on both architectures.
+However, Rosetta was made optional in 10.6 and dropped
+completely in 10.7, which means now we HAVE to compile Intel.
+
+It's possible to compile a "Universal binary" that contains both
+PowerPC and Intel versions of the code.  The problem with doing
+this in eSpeak is that eSpeak expects different phoneme data
+files depending on the CPU's endianness.  Therefore, I patched
+synthdata.cpp as follows, to make it read the phoneme data from
+different files depending on the endianness:
+
+--- espeak-1.45.04-source/src/synthdata.cpp	2011-04-25 17:22:27.000000000 +0100
++++ synthdata.cpp	2011-07-27 17:31:09.000000000 +0100
+@@ -118,11 +118,16 @@
+ 	unsigned char *p;
+ 	int *pw;
+ 
+-	if((phoneme_tab_data = (unsigned char *)ReadPhFile((void *)(phoneme_tab_data),"phontab",NULL)) == NULL)
++	#ifdef ARCH_BIG
++	#define BIG_ENDIAN_SUFFIX "BE"
++	#else
++	#define BIG_ENDIAN_SUFFIX ""
++	#endif
++	if((phoneme_tab_data = (unsigned char *)ReadPhFile((void *)(phoneme_tab_data),"phontab" BIG_ENDIAN_SUFFIX,NULL)) == NULL)
+ 		return(-1);
+-	if((phoneme_index = (USHORT *)ReadPhFile((void *)(phoneme_index),"phonindex",NULL)) == NULL)
++	if((phoneme_index = (USHORT *)ReadPhFile((void *)(phoneme_index),"phonindex" BIG_ENDIAN_SUFFIX,NULL)) == NULL)
+ 		return(-1);
+-	if((phondata_ptr = ReadPhFile((void *)(phondata_ptr),"phondata",NULL)) == NULL)
++	if((phondata_ptr = ReadPhFile((void *)(phondata_ptr),"phondata" BIG_ENDIAN_SUFFIX,NULL)) == NULL)
+ 		return(-1);
+ 	if((tunes = (TUNE *)ReadPhFile((void *)(tunes),"intonations",&length)) == NULL)
+ 		return(-1);
+
+
+(An alternative approach would be to incorporate the
+platforms/big_endian logic into the eSpeak runtime, which is
+probably OK on a Mac as the CPU is quite fast.)
+
+Attached is an eSpeak 1.45.04 compiled as a "Universal binary"
+for i386 and PPC, with both the big-endian and little-endian
+phoneme data files included and with the above patch to cause it
+to read from the appropriate file depending on which
+architecture it's running on.  I've tested it on both
+architectures and it works on both.  As the university is just
+about to upgrade all their Macs to 10.7 (which will not have
+Rosetta), this is probably the last time I'll be able to test
+any PPC code, so I thought I'd better get it in while I can!
+
+Silas
