@@ -1,14 +1,15 @@
 #'This is a script to generate a 2nd-order markov model
-#'of phonotactics in a language with PHONEMIC ORTHOGRPAHY
+#'of letters in a language with
 #'
 #'specify the name of a csv file with headers 'word' and 'freq', 
 #'as well as any digraphs in your language
 
-filename <- 'kiswahili'
-digraphs <- digraphs <- c('DH', 'TH', 'SH', 'NY', 'KH')
+filename <- 'en_50k'
+digraphs <- NULL
 
 #Load Data & packages
-dict <- read.csv(paste0(filename, '.csv'), stringsAsFactors = F)
+dict <- read.table(paste0(filename, '.txt'), stringsAsFactors = F)
+names(dict) <- c('word', 'freq')
 dict$word <- toupper(dict$word)
 
 library(dplyr)
