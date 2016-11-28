@@ -52,18 +52,18 @@ names(words6) <- NULL
 words6 <- unlist(words6)
 words5stop <- words6[grepl('.0', names(words6))]
 
-words6sel <- words6[!grepl('.0', names(words6))]
-words7 <- mapply(getNext, words6sel, names(words6sel))
-names(words7) <- NULL
-words7 <- unlist(words7)
+# words6sel <- words6[!grepl('.0', names(words6))]
+# words7 <- mapply(getNext, words6sel, names(words6sel))
+# names(words7) <- NULL
+# words7 <- unlist(words7)
 words6stop <- words6[grepl('.0', names(words6))]
-words7stop <- words7[grepl('.0', names(words7))]
-
-words <- data.frame(combo_probability=c(words2stop, words3stop, words4stop, words5stop, words6stop, words7stop),
-                    W.0.R.D=c(names(words2stop), names(words3stop), names(words4stop), names(words5stop), names(words6stop), names(words7stop)),
+# words7stop <- words7[grepl('.0', names(words7))]
+  
+words <- data.frame(combo_probability=c(words2stop, words3stop, words4stop, words5stop, words6stop),
+                    W.0.R.D=c(names(words2stop), names(words3stop), names(words4stop), names(words5stop), names(words6stop)),
                     stringsAsFactors = FALSE)
 
-words$phonecount <- sapply(words$W.ER.D, countPhones)
+words$phonecount <- sapply(words$W.0.R.D, countPhones)
 
 words <- words[order(words$combo_probability, decreasing=T), ]
 

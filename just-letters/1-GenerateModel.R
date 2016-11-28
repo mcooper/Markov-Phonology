@@ -4,15 +4,24 @@
 #'specify the name of a csv file with headers 'word' and 'freq', 
 #'as well as any digraphs in your language
 
-filename <- 'en_50k'
+lang <- 'es'
+filename <- 'fr_50k'
 digraphs <- NULL
 
 #Load Data & packages
-dict <- read.table(paste0(filename, '.txt'), stringsAsFactors = F)
+library(dplyr)
+library(RCurl)
+
+dict <- read.table(file = paste0("https://github.com/hermitdave/FrequencyWords/blob/master/content/2016/", lang, "/", filename, ".txt"), stringsAsFactors = F)
+
+
+dict <- read.table('/Users/matthewcooper/Creativitea/FrequencyWords/content/2016/fr/fr_50k.txt')
+
 names(dict) <- c('word', 'freq')
 dict$word <- toupper(dict$word)
 
-library(dplyr)
+
+
 
 #Define functions
 parseWords <- function(str){
